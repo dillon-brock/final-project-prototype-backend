@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUncheckedIndexedAccess": true,
+    "outDir": "./dist/",
+    "resolveJsonModule": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "target": "es6",
+    "useUnknownInCatchVariables": true
+  }
+}
