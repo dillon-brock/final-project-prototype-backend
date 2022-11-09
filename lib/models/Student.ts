@@ -1,4 +1,4 @@
-import { NewStudentInfo, StudentRow, Teacher } from "../types/types";
+import { NewStudentInfo, StudentRow, Teacher, TeacherStudentConnection, TeacherStudentRows } from "../types/types";
 
 const pool = require('../utils/pool');
 
@@ -49,6 +49,17 @@ export class Student {
 
     if (!rows[0]) return null;
     return new Student(rows[0]);
+  }
+
+  async addTeacherById(teacherId: string): Promise<TeacherStudentConnection | undefined> {
+    const { rows }: TeacherStudentRows = await pool.query(
+      `INSERT INTO teachers_students (teacher_id, student_id)
+      VALUES ($1, $2)
+      RETURNING *`,
+      [teacherId, this.id]
+    );
+
+    return rows[0];
   }
 
   async getTeachers(): Promise<Student> {

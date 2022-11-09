@@ -1,5 +1,3 @@
-// import { UserFromConstructor, UserSignInData, UserSignUpData } from '../types/types';
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 import { User } from '../models/User';

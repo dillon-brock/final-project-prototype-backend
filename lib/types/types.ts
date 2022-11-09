@@ -1,45 +1,3 @@
-// User Model Types
-
-export interface UserFromDatabase {
-  id: string;
-  email: string;
-  password_hash: string;
-  first_name: string;
-  last_name: string;
-  image_url: string;
-}
-
-export interface UserFromConstructor {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  imageUrl: string;
-}
-
-export interface UserInsertData {
-  email: string;
-  passwordHash: string;
-  firstName: string;
-  lastName: string;
-  imageUrl: string;
-}
-
-// User Service Types
-
-export interface UserSignUpData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  imageUrl: string;
-}
-
-export interface UserSignInData {
-  email: string;
-  password: string;
-}
-
 export interface Teacher {
   id: string;
   userId: string;
@@ -68,6 +26,7 @@ export interface TeacherRow {
   image_url: string;
   students?: any;
   avg_rating?: number;
+  reviews?: Array<Review>;
 }
 
 export interface NewTeacherInfo {
@@ -133,4 +92,38 @@ export interface UnhashedUserInfo {
 export interface UserSignInInfo {
   email: string;
   password: string;
+}
+
+export interface ReviewRow {
+  id: string;
+  stars: string;
+  detail: string;
+  teacher_id: string;
+  student_id: string;
+}
+
+export interface NewReviewData {
+  stars: string;
+  detail: string | null;
+  teacherId: string;
+  studentId: string | null;
+}
+
+export interface Review {
+  id: string;
+  stars: string;
+  detail: string;
+  teacherId: string;
+  studentId: string;
+}
+
+export interface TeacherStudentConnection {
+  id: string;
+  teacher_id: string;
+  student_id: string;
+  connection_approved: string;
+}
+
+export type TeacherStudentRows = {
+  rows: Array<TeacherStudentConnection>
 }

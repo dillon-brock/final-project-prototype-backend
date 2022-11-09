@@ -1,21 +1,23 @@
+import { NewReviewData, ReviewRow } from "../types/types";
+
 const pool = require('../utils/pool');
 
-module.exports = class Review {
-  id;
-  stars;
-  detail;
-  teacher_id;
-  student_id;
+export class Review {
+  id: string;
+  stars: string;
+  detail: string;
+  teacherId: string;
+  studentId: string;
 
-  constructor(row) {
+  constructor(row: ReviewRow) {
     this.id = row.id;
     this.stars = row.stars;
     this.detail = row.detail;
-    this.teacher_id = row.teacher_id;
-    this.student_id = row.student_id;
+    this.teacherId = row.teacher_id;
+    this.studentId = row.student_id;
   }
 
-  static async create({ stars, detail = null, teacherId, studentId = null }) {
+  static async create({ stars, detail = null, teacherId, studentId = null }: NewReviewData): Promise<Review> {
     const { rows } = await pool.query(
       `INSERT INTO reviews (stars, detail, teacher_id, student_id)
       VALUES ($1, $2, $3, $4)
@@ -26,7 +28,7 @@ module.exports = class Review {
     return new Review(rows[0]);
   }
 
-  static async deleteById(id) {
+  static async deleteById(id: string): Promise<Review | null> {
     const { rows } = await pool.query(
       `DELETE FROM reviews
       WHERE id = $1
@@ -36,4 +38,4 @@ module.exports = class Review {
     if (!rows[0]) return null;
     return new Review(rows[0]);
   }
-};
+}

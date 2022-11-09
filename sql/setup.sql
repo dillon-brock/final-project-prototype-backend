@@ -1,7 +1,7 @@
 -- Use this file to define your SQL tables
 -- The SQL in this file will be executed when you run `npm run setup-db`
 
-DROP TABLE IF EXISTS ratings;
+DROP TABLE IF EXISTS reviews;
 DROP TABLE IF EXISTS teachers_students;
 DROP TABLE IF EXISTS teachers;
 DROP TABLE IF EXISTS students;
@@ -59,17 +59,17 @@ CREATE TABLE teachers_students (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   teacher_id BIGINT NOT NULL,
   student_id BIGINT NOT NULL,
-  connection_approved BOOLEAN NOT NULL DEFAULT FALSE,
+  connection_approved VARCHAR NOT NULL DEFAULT 'pending',
   FOREIGN KEY (teacher_id) REFERENCES teachers(id),
   FOREIGN KEY (student_id) REFERENCES students(id)
 );
 
 INSERT INTO teachers_students (teacher_id, student_id, connection_approved) VALUES
-  (1, 1, TRUE),
-  (1, 2, TRUE),
-  (2, 2, FALSE),
-  (3, 1, FALSE),
-  (2, 1, TRUE);
+  (1, 1, 'approved'),
+  (1, 2, 'rejected'),
+  (2, 2, 'approved'),
+  (3, 1, 'rejected'),
+  (2, 1, 'approved');
 
 
 CREATE TABLE reviews (

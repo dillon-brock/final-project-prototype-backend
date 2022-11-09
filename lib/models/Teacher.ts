@@ -1,4 +1,4 @@
-import { NewTeacherInfo, TeacherDatabaseRows, TeacherRow } from "../types/types";
+import { NewTeacherInfo, Review, TeacherDatabaseRows, TeacherRow } from "../types/types";
 import { Student } from "./Student";
 
 const pool = require('../utils/pool');
@@ -16,8 +16,9 @@ export class Teacher {
   lastName: string;
   imageUrl: string;
   avgRating?: number;
+  reviews?: Array<Review>;
 
-  constructor({ id, user_id, subject, bio, zip_code, phone_number, contact_email, first_name, last_name, image_url, students, avg_rating }: TeacherRow) {
+  constructor({ id, user_id, subject, bio, zip_code, phone_number, contact_email, first_name, last_name, image_url, students, avg_rating, reviews }: TeacherRow) {
     this.id = id;
     this.userId = user_id;
     this.subject = subject;
@@ -30,6 +31,7 @@ export class Teacher {
     this.imageUrl = image_url;
     if (students) this.students = students.length ? students : [];
     if (avg_rating) this.avgRating = avg_rating;
+    if (reviews) this.reviews = reviews;
   }
 
   static async create({ userId, subject, bio = null, zipCode, phoneNumber = null, contactEmail = null, firstName, lastName, imageUrl }: NewTeacherInfo): Promise<Teacher | null> {
@@ -57,8 +59,8 @@ export class Teacher {
 
   static async findById(id: string): Promise<Teacher | null> {
     const { rows }: TeacherDatabaseRows = await pool.query(
-      `SELECT AVG(ratings.stars) as avg_rating, teachers.* FROM teachers
-      LEFT JOIN ratings ON ratings.teacher_id = teachers.id
+      `SELECT AVG(reviews.stars) as avg_rating, teachers.* FROM teachers
+      LEFT JOIN reviews ON reviews.teacher_id = teachers.id
       WHERE teachers.id = $1
       GROUP BY teachers.id
       `, [id]
@@ -107,21 +109,22 @@ export class Teacher {
     if (!rows[0]) return null;
     return new Teacher(rows[0]);
   }
+
+  async getReviews(): Promise<Teacher | null> {
+
+    const { rows }: TeacherDatabaseRows = await pool.query(
+      `SELECT teachers.id,
+      COALESCE(
+        json_agg(json_build_object('id', reviews.id, 'stars', reviews.stars, 'detail', reviews.detail, 'teacher_id', reviews.teacher_id, 'student_id', reviews.student_id))
+        FILTER (WHERE reviews.id IS NOT NULL), '[]'
+        ) as reviews from teachers
+        INNER JOIN reviews ON teachers.id = reviews.teacher_id
+        WHERE teachers.id = $1
+        GROUP BY teachers.id`,
+      [this.id]
+    );
+
+    if (!rows[0]) return null;
+    return new Teacher(rows[0]);
+  }
 };
-
-
-
-
-
-
-
-// SELECT x.avg_rating AS rating, users.first_name, users.last_name, users.image_url, teachers.* FROM teachers
-//       LEFT JOIN
-//       (
-//         SELECT AVG(ratings.stars) as avg_rating, teachers.id FROM teachers
-//         LEFT JOIN ratings ON ratings.teacher_id = teachers.id
-//         GROUP BY teachers.id
-//       ) x
-//       ON (teachers.id = x.id)
-//       LEFT JOIN users ON users.id = teachers.user_id
-//       WHERE teachers.id = $1
