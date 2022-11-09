@@ -15,7 +15,11 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
+    "sourceMap": true,
     "target": "es6",
-    "useUnknownInCatchVariables": true
-  }
+    "useUnknownInCatchVariables": true,
+  },
+  "include": [
+    "lib/**/*.ts"
+  ]
 }

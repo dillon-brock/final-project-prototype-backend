@@ -1,11 +1,14 @@
-const { Router } = require('express');
+// const { Router, Request, Response } = require('express');
+import { Router, type Request, type Response} from 'express';
 import { Student } from '../models/Student';
 import { UserService } from '../services/UserService';
 
 const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24;
 
-const router = Router()
-  .post('/', async (req, res, next) => {
+export const studentsRouter = Router();
+
+studentsRouter
+  .post('/', async (req: Request, res: Response, next: (e?: any) => any) => {
     try {
       const {
         email,
@@ -30,11 +33,17 @@ const router = Router()
       next(e);
     }
   })
-  .get('/:id/teachers', async (req, res, next) => {
+  .get('/:id/teachers', async (req: Request, res: Response, next) => {
     try {
-      const student = await Student.findById(req.params.id);
-      const teachers = await student.getTeachers();
-      res.json(teachers);
+      if (req.params.id) {
+        const student = await Student.findById(req.params.id);
+        if (student) {
+          const teachers = await student.getTeachers();
+          res.json(teachers);
+      }
+      } else {
+        res.json(null);
+      }
     } catch (e) {
       next(e);
     }
@@ -49,13 +58,17 @@ const router = Router()
   })
   .post('/:id/teachers', async (req, res, next) => {
     try {
-      const student = await Student.findById(req.params.id);
-      const connection = await student.addTeacherById(req.body.teacherId);
-      res.json(connection);
+      if (req.params.id) {
+        const student = await Student.findById(req.params.id);
+        if (student) {
+          const connection = await student.addTeacherById(req.body.teacherId);
+          res.json(connection);
+        }
+        else {
+          res.json(null);
+        }
+      }
     } catch (e) {
       next(e);
     }
   });
-
-
-export { router };
